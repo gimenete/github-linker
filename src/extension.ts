@@ -78,7 +78,7 @@ function calculateURL() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('githublinker.copy', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('githublinker.copyLink', () => {
         try {
             const finalURL = calculateURL();
             clipboardy.writeSync(finalURL);
