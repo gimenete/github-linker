@@ -3,6 +3,7 @@
     "displayName": "GitHub linker",
     "description": "Create links to fragments of code in GitHub",
     "version": "0.1.0",
+    "publisher": "gimenete",
     "engines": {
         "vscode": "^1.30.0"
     },
