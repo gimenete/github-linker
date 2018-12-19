@@ -2,14 +2,14 @@
     "name": "github-linker",
     "displayName": "GitHub linker",
     "description": "Create links to fragments of code in GitHub",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "publisher": "gimenete",
     "engines": {
         "vscode": "^1.30.0"
     },
     "repository": {
-        "type" : "git",
-        "url" : "https://github.com/gimenete/github-linker.git"
+        "type": "git",
+        "url": "https://github.com/gimenete/github-linker.git"
     },
     "categories": [
         "Other"
