@@ -50,10 +50,4 @@ The file must be tracked in a git repo and the current branch must be pushed to 
 
 If you've made changes to the file that are not pushed to GitHub.com, the link could be not accurate.
 
-## Release Notes
-
-### 0.0.1
-
-Initial version
-
 **Enjoy!**
