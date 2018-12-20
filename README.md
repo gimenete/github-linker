@@ -51,3 +51,5 @@ The file must be tracked in a git repo and the current branch must be pushed to 
 If you've made changes to the file that are not pushed to GitHub.com, the link could be not accurate.
 
 **Enjoy!**
+
+Extension icon made by [Freepik](https://www.freepik.com/ "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0")
