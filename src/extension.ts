@@ -16,8 +16,11 @@ function getGitHubRepoURL(url: string) {
         return url;
     }
     if (url.startsWith('git@')) {
-        var domain = url.match("git@(.+):.+$")[1]
-        return 'https://' + domain + '/' + url.substring(('git@' + domain + ':').length);
+        var domainList = url.match("git@(.+):.+$");
+        if (domainList) {
+            var domain = domainList[1];
+            return 'https://' + domain + '/' + url.substring(('git@' + domain + ':').length);
+        }
     }
     return null;
 }
@@ -58,10 +61,13 @@ function calculateURL() {
     const gitConfig = ini.parse(fs.readFileSync(path.join(gitDir, 'config'), 'utf8'))
 
     const branchInfo = Object.values(gitConfig).find(val => val['merge'] === refName);
+    var remoteName = "origin";
     if (!branchInfo) {
-        throw new Error('No branch info found. Cannot calculate remote');
+        console.error('No branch info found. Cannot calculate remote. Will use origin by default');
+    } else {
+        remoteName = branchInfo['remote'];
     }
-    const remote = branchInfo['remote'];
+    const remote = remoteName;
     const remoteInfo = Object.entries(gitConfig).find((entry) => entry[0] === `remote "${remote}"`)
     if (!remoteInfo) {
         throw new Error(`No remote found called "${remote}"`);
