@@ -53,3 +53,15 @@ If you've made changes to the file that are not pushed to GitHub.com, the link c
 **Enjoy!**
 
 Extension icon made by [Freepik](https://www.freepik.com/ "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0")
+
+
+## Development
+https://code.visualstudio.com/api/get-started/your-first-extension 
+```bash
+npm install -g yo generator-code
+npm install -g vsce
+# generate github-linker-0.2.2.vsix
+vsce package
+# published to VS Code MarketPlace
+vsce publish
+```
