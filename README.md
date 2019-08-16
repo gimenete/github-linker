@@ -2,7 +2,7 @@
 
 ## Features
 
-GitHub linker allows you to select a piece of text and create a permantent link to GitHub.com for that piece of text. Just select the text, right click, and you'll see two new options.
+GitHub linker allows you to select a piece of text and create a permanent link to GitHub.com for that piece of text. Just select the text, right click, and you'll see two new options.
 
 **Copy a permanent link to the clipboard**
 
