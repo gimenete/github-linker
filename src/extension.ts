@@ -21,13 +21,7 @@ function getGitHubRepoURL(url: string) {
     return null;
 }
 
-function calculateURL() {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-        throw new Error('No selected editor');
-    }
-    const {document, selection} = editor;
-    const {fileName} = document;
+function findGitFolder(fileName: string): string {
     let dir = path.dirname(fileName)
     let gitDir = null;
     while (true) {
@@ -43,6 +37,34 @@ function calculateURL() {
     if (!gitDir) {
         throw new Error('No .git dir found. Is this a git repo?');
     }
+
+    if (fs.statSync(gitDir).isFile()) {
+        // not a normal .git dir, could be a `git worktree`, read the file to find the real root
+        const text = fs.readFileSync(gitDir).toString()
+
+        console.log('gitDir is a file, checking to see if worktree', { text })
+
+        if (text.slice(0, 8) === 'gitdir: ') {
+            // gitdir points to the real root
+            gitDir = findGitFolder(text.slice(8).trim())
+        }
+    }
+
+    return gitDir
+}
+
+function calculateURL() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        throw new Error('No selected editor');
+    }
+    const {document, selection} = editor;
+    const {fileName} = document;
+
+    const dir = path.dirname(fileName)
+
+    const gitDir = findGitFolder(fileName);
+
     const relativePath = path.relative(dir, fileName);
 
     const head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8')
