@@ -74,7 +74,9 @@ function calculateURL() {
     const start = selection.start.line + 1;
     const end = selection.end.line + 1;
 
-    return `${repoURL}/blob/${sha}/${relativePath}#L${start}-L${end}`;
+    const relativePathURL = relativePath.split(path.delimiter).join('/');
+
+    return `${repoURL}/blob/${sha}/${relativePathURL}#L${start}-L${end}`;
 }
 
 export function activate(context: vscode.ExtensionContext) {
