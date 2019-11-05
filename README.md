@@ -48,7 +48,7 @@ Object.assign(config, {
 
 The file must be tracked in a git repo and the current branch must be pushed to GitHub.com.
 
-If you've made changes to the file that are not pushed to GitHub.com, the link could be not accurate.
+If you've made changes to the file that are not pushed to GitHub.com, the link may be inaccurate.
 
 **Enjoy!**
 
