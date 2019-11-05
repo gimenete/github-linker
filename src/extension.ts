@@ -10,7 +10,7 @@ import * as clipboardy from 'clipboardy';
 
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
-        url = url.substring(0, url.length - '.git'.length)
+        url = url.substring(0, url.length - '.git'.length);
     }
     if (url.startsWith('https://github.com/')) {
         return url;
@@ -28,11 +28,11 @@ function calculateURL() {
     }
     const {document, selection} = editor;
     const {fileName} = document;
-    let dir = path.dirname(fileName)
+    let dir = path.dirname(fileName);
     let gitDir = null;
     while (true) {
-        gitDir = path.join(dir, '.git')
-        const exits = fs.existsSync(gitDir)
+        gitDir = path.join(dir, '.git');
+        const exits = fs.existsSync(gitDir);
         if (exits) {
             console.log(gitDir);
             break;
@@ -45,28 +45,28 @@ function calculateURL() {
     }
     const relativePath = path.relative(dir, fileName);
 
-    const head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8')
+    const head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8');
     const refPrefix = 'ref: ';
-    const ref = head.split('\n').find(line => line.startsWith(refPrefix))
+    const ref = head.split('\n').find(line => line.startsWith(refPrefix));
     if (!ref) {
         throw new Error('No ref found. Cannot calculate current commit');
     }
-    const refName = ref.substring(refPrefix.length)
+    const refName = ref.substring(refPrefix.length);
     const sha = fs.readFileSync(path.join(gitDir, refName), 'utf8').trim();
 
-    const gitConfig = ini.parse(fs.readFileSync(path.join(gitDir, 'config'), 'utf8'))
+    const gitConfig = ini.parse(fs.readFileSync(path.join(gitDir, 'config'), 'utf8'));
 
     const branchInfo = Object.values(gitConfig).find(val => val['merge'] === refName);
     if (!branchInfo) {
         throw new Error('No branch info found. Cannot calculate remote');
     }
     const remote = branchInfo['remote'];
-    const remoteInfo = Object.entries(gitConfig).find((entry) => entry[0] === `remote "${remote}"`)
+    const remoteInfo = Object.entries(gitConfig).find((entry) => entry[0] === `remote "${remote}"`);
     if (!remoteInfo) {
         throw new Error(`No remote found called "${remote}"`);
     }
     const url = remoteInfo[1]['url'];
-    const repoURL = getGitHubRepoURL(url)
+    const repoURL = getGitHubRepoURL(url);
     if (!url) {
         throw new Error(`The remote "${remote}" does not look like to be hosted at GitHub`);
     }
