@@ -74,7 +74,7 @@ function calculateURL() {
     const start = selection.start.line + 1;
     const end = selection.end.line + 1;
 
-    const relativePathURL = relativePath.split(path.delimiter).join('/');
+    const relativePathURL = relativePath.split(path.sep).join('/');
 
     return `${repoURL}/blob/${sha}/${relativePathURL}#L${start}-L${end}`;
 }
