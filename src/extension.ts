@@ -61,7 +61,7 @@ function calculateURL() {
 
         if (text.slice(0, 8) === 'gitdir: ') {
             // gitdir points to worktree subdir of the real gitdir
-            gitDir = path.join(text.slice(8).trim(), '../..')
+            gitDir = path.join(text.slice(worktreePrefix.length).trim(), '..', '..');
         }
     }
 
