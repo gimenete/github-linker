@@ -41,6 +41,21 @@ function findGitFolder(fileName: string): string {
     return gitDir
 }
 
+function getWorktreePath(gitPath: string) {
+    if (fs.statSync(gitPath).isFile()) {
+        // not a normal .git dir, could be a `git worktree`, read the file to find the real root
+        const text = fs.readFileSync(gitPath).toString()
+
+        console.log('gitPath is a file, checking to see if worktree', { text })
+
+        const worktreePrefix = 'gitdir: ';
+
+        if (text.startsWith(worktreePrefix)) {
+            return text.slice(worktreePrefix.length).trim();
+        }
+    }
+}
+
 function calculateURL() {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
@@ -53,23 +68,15 @@ function calculateURL() {
 
     const baseDir = path.join(gitDir, '..')
 
-    if (fs.statSync(gitDir).isFile()) {
-        // not a normal .git dir, could be a `git worktree`, read the file to find the real root
-        const text = fs.readFileSync(gitDir).toString()
+    const worktreePath = getWorktreePath(gitDir)
 
-        console.log('gitDir is a file, checking to see if worktree', { text })
-
-        const worktreePrefix = 'gitdir: ';
-
-        if (text.startsWith(worktreePrefix)) {
-            // gitdir points to worktree subdir of the real gitdir
-            gitDir = path.join(text.slice(worktreePrefix.length).trim(), '..', '..');
-        }
+    if (worktreePath) {
+        gitDir = path.join(worktreePath, '..', '..')
     }
 
     const relativePath = path.relative(baseDir, fileName);
 
-    const head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8');
+    const head = fs.readFileSync(path.join(worktreePath || gitDir, 'HEAD'), 'utf8');
     const refPrefix = 'ref: ';
     const ref = head.split('\n').find(line => line.startsWith(refPrefix));
     if (!ref) {
