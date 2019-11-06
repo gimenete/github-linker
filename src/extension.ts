@@ -59,7 +59,9 @@ function calculateURL() {
 
         console.log('gitDir is a file, checking to see if worktree', { text })
 
-        if (text.slice(0, 8) === 'gitdir: ') {
+        const worktreePrefix = 'gitdir: ';
+
+        if (text.startsWith(worktreePrefix)) {
             // gitdir points to worktree subdir of the real gitdir
             gitDir = path.join(text.slice(worktreePrefix.length).trim(), '..', '..');
         }
