@@ -21,14 +21,8 @@ function getGitHubRepoURL(url: string) {
     return null;
 }
 
-function calculateURL() {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-        throw new Error('No selected editor');
-    }
-    const {document, selection} = editor;
-    const {fileName} = document;
-    let dir = path.dirname(fileName);
+function findGitFolder(fileName: string): string {
+    let dir = path.dirname(fileName)
     let gitDir = null;
     while (true) {
         gitDir = path.join(dir, '.git');
@@ -43,9 +37,46 @@ function calculateURL() {
     if (!gitDir) {
         throw new Error('No .git dir found. Is this a git repo?');
     }
-    const relativePath = path.relative(dir, fileName);
 
-    const head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8');
+    return gitDir
+}
+
+function getWorktreePath(gitPath: string) {
+    if (fs.statSync(gitPath).isFile()) {
+        // not a normal .git dir, could be a `git worktree`, read the file to find the real root
+        const text = fs.readFileSync(gitPath).toString()
+
+        console.log('gitPath is a file, checking to see if worktree', { text })
+
+        const worktreePrefix = 'gitdir: ';
+
+        if (text.startsWith(worktreePrefix)) {
+            return text.slice(worktreePrefix.length).trim();
+        }
+    }
+}
+
+function calculateURL() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        throw new Error('No selected editor');
+    }
+    const {document, selection} = editor;
+    const {fileName} = document;
+
+    let gitDir = findGitFolder(fileName);
+
+    const baseDir = path.join(gitDir, '..')
+
+    const worktreePath = getWorktreePath(gitDir)
+
+    if (worktreePath) {
+        gitDir = path.join(worktreePath, '..', '..')
+    }
+
+    const relativePath = path.relative(baseDir, fileName);
+
+    const head = fs.readFileSync(path.join(worktreePath || gitDir, 'HEAD'), 'utf8');
     const refPrefix = 'ref: ';
     const ref = head.split('\n').find(line => line.startsWith(refPrefix));
     if (!ref) {
