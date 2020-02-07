@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as ini from 'ini';
 import * as clipboardy from 'clipboardy';
+import * as open from 'open';
 
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
@@ -120,6 +121,16 @@ export function activate(context: vscode.ExtensionContext) {
             const finalURL = calculateURL();
             clipboardy.writeSync(finalURL);
             vscode.window.showInformationMessage('GitHub URL copied to the clipboard!');
+        } catch (err) {
+            vscode.window.showErrorMessage(err.message);
+            throw err;
+        }
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('githublinker.openLink', () => {
+        try {
+            open(calculateURL())
+            vscode.window.showInformationMessage('GitHub URL opened by system handler!');
         } catch (err) {
             vscode.window.showErrorMessage(err.message);
             throw err;
