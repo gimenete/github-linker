@@ -10,13 +10,17 @@ import * as clipboardy from 'clipboardy';
 
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
-        url = url.substring(0, url.length - '.git'.length);
+        url = url.substring(0, url.length - '.git'.length)
     }
-    if (url.startsWith('https://github.com/')) {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
-    if (url.startsWith('git@github.com:')) {
-        return 'https://github.com/' + url.substring('git@github.com:'.length);
+    if (url.startsWith('git@')) {
+        var domainList = url.match("git@(.+):.+$");
+        if (domainList) {
+            var domain = domainList[1];
+            return 'https://' + domain + '/' + url.substring(('git@' + domain + ':').length);
+        }
     }
     return null;
 }
