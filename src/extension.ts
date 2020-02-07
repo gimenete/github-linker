@@ -10,7 +10,7 @@ import * as clipboardy from 'clipboardy';
 
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
-        url = url.substring(0, url.length - '.git'.length)
+        url = url.substring(0, url.length - '.git'.length);
     }
     if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
@@ -25,18 +25,12 @@ function getGitHubRepoURL(url: string) {
     return null;
 }
 
-function calculateURL() {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-        throw new Error('No selected editor');
-    }
-    const {document, selection} = editor;
-    const {fileName} = document;
+function findGitFolder(fileName: string): string {
     let dir = path.dirname(fileName)
     let gitDir = null;
     while (true) {
-        gitDir = path.join(dir, '.git')
-        const exits = fs.existsSync(gitDir)
+        gitDir = path.join(dir, '.git');
+        const exits = fs.existsSync(gitDir);
         if (exits) {
             console.log(gitDir);
             break;
@@ -47,18 +41,55 @@ function calculateURL() {
     if (!gitDir) {
         throw new Error('No .git dir found. Is this a git repo?');
     }
-    const relativePath = path.relative(dir, fileName);
 
-    const head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8')
+    return gitDir
+}
+
+function getWorktreePath(gitPath: string) {
+    if (fs.statSync(gitPath).isFile()) {
+        // not a normal .git dir, could be a `git worktree`, read the file to find the real root
+        const text = fs.readFileSync(gitPath).toString()
+
+        console.log('gitPath is a file, checking to see if worktree', { text })
+
+        const worktreePrefix = 'gitdir: ';
+
+        if (text.startsWith(worktreePrefix)) {
+            return text.slice(worktreePrefix.length).trim();
+        }
+    }
+}
+
+function calculateURL() {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        throw new Error('No selected editor');
+    }
+    const {document, selection} = editor;
+    const {fileName} = document;
+
+    let gitDir = findGitFolder(fileName);
+
+    const baseDir = path.join(gitDir, '..')
+
+    const worktreePath = getWorktreePath(gitDir)
+
+    if (worktreePath) {
+        gitDir = path.join(worktreePath, '..', '..')
+    }
+
+    const relativePath = path.relative(baseDir, fileName);
+
+    const head = fs.readFileSync(path.join(worktreePath || gitDir, 'HEAD'), 'utf8');
     const refPrefix = 'ref: ';
-    const ref = head.split('\n').find(line => line.startsWith(refPrefix))
+    const ref = head.split('\n').find(line => line.startsWith(refPrefix));
     if (!ref) {
         throw new Error('No ref found. Cannot calculate current commit');
     }
-    const refName = ref.substring(refPrefix.length)
+    const refName = ref.substring(refPrefix.length);
     const sha = fs.readFileSync(path.join(gitDir, refName), 'utf8').trim();
 
-    const gitConfig = ini.parse(fs.readFileSync(path.join(gitDir, 'config'), 'utf8'))
+    const gitConfig = ini.parse(fs.readFileSync(path.join(gitDir, 'config'), 'utf8'));
 
     const branchInfo = Object.values(gitConfig).find(val => val['merge'] === refName);
     var remoteName = "origin";
@@ -67,13 +98,14 @@ function calculateURL() {
     } else {
         remoteName = branchInfo['remote'];
     }
-    const remote = remoteName;
-    const remoteInfo = Object.entries(gitConfig).find((entry) => entry[0] === `remote "${remote}"`)
+    const remote = branchInfo['remote'];
+    const remoteInfo = Object.entries(gitConfig).find((entry) => entry[0] === `remote "${remote}"`);
+
     if (!remoteInfo) {
         throw new Error(`No remote found called "${remote}"`);
     }
     const url = remoteInfo[1]['url'];
-    const repoURL = getGitHubRepoURL(url)
+    const repoURL = getGitHubRepoURL(url);
     if (!url) {
         throw new Error(`The remote "${remote}" does not look like to be hosted at GitHub`);
     }
@@ -81,7 +113,9 @@ function calculateURL() {
     const start = selection.start.line + 1;
     const end = selection.end.line + 1;
 
-    return `${repoURL}/blob/${sha}/${relativePath}#L${start}-L${end}`;
+    const relativePathURL = relativePath.split(path.sep).join('/');
+
+    return `${repoURL}/blob/${sha}/${relativePathURL}#L${start}-L${end}`;
 }
 
 export function activate(context: vscode.ExtensionContext) {

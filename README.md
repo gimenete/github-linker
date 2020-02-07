@@ -2,7 +2,7 @@
 
 ## Features
 
-GitHub linker allows you to select a piece of text and create a permantent link to GitHub.com for that piece of text. Just select the text, right click, and you'll see two new options.
+GitHub linker allows you to select a piece of text and create a permanent link to GitHub.com for that piece of text. Just select the text, right click, and you'll see two new options.
 
 **Copy a permanent link to the clipboard**
 
@@ -48,7 +48,7 @@ Object.assign(config, {
 
 The file must be tracked in a git repo and the current branch must be pushed to GitHub.com.
 
-If you've made changes to the file that are not pushed to GitHub.com, the link could be not accurate.
+If you've made changes to the file that are not pushed to GitHub.com, the link may be inaccurate.
 
 **Enjoy!**
 
