@@ -106,8 +106,15 @@ function calculateURL() {
     const end = selection.end.line + 1;
 
     const relativePathURL = relativePath.split(path.sep).join('/');
+    const absolutePathURL = `${repoURL}/blob/${sha}/${relativePathURL}`;
 
-    return `${repoURL}/blob/${sha}/${relativePathURL}#L${start}-L${end}`;
+    if (start === 1 && end === document.lineCount) {
+        return absolutePathURL;
+    } else if (start === end) {
+        return `${absolutePathURL}#L${start}`;
+    }
+
+    return `${absolutePathURL}#L${start}-L${end}`;
 }
 
 export function activate(context: vscode.ExtensionContext) {
