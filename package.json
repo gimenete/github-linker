@@ -23,12 +23,12 @@
     "contributes": {
         "commands": [
             {
-                "when": "editorHasSelection",
+                "when": "editorTextFocus || editorHasSelection",
                 "command": "githublinker.copyLink",
                 "title": "GitHub linker: Copy link to selection"
             },
             {
-                "when": "editorHasSelection",
+                "when": "editorTextFocus || editorHasSelection",
                 "command": "githublinker.copyMarkdown",
                 "title": "GitHub linker: Copy link to selection and code as markdown"
             }
@@ -36,12 +36,12 @@
         "menus": {
             "editor/context": [
                 {
-                    "when": "editorHasSelection",
+                    "when": "editorTextFocus || editorHasSelection",
                     "command": "githublinker.copyLink",
                     "group": "9_cutcopypaste"
                 },
                 {
-                    "when": "editorHasSelection",
+                    "when": "editorTextFocus || editorHasSelection",
                     "command": "githublinker.copyMarkdown",
                     "group": "9_cutcopypaste"
                 }
