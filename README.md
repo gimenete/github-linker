@@ -1,4 +1,6 @@
-# GitHub Linker
+# Linker NG
+
+Inspired by [Gimenete](https://github.com/gimenete/github-linker)
 
 ## Features
 
@@ -46,10 +48,16 @@ Object.assign(config, {
 
 ## Requirements
 
-The file must be tracked in a git repo and the current branch must be pushed to GitHub.com.
+The commit and file must be tracked in a git repo and the current branch must be pushed to GitHub.com.
 
 If you've made changes to the file that are not pushed to GitHub.com, the link may be inaccurate.
 
 **Enjoy!**
 
 Extension icon made by [Freepik](https://www.freepik.com/ "Freepik") from [www.flaticon.com](https://www.flaticon.com/ "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0")
+
+## TODO
+
+* Add Gitlab, Bitbucket, Gogs, and other providers.
+* Clean up code. Make it a bit more structured like https://github.com/ManuelHentschel/vscode-github-linker
+  

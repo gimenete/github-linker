@@ -1,6 +1,6 @@
 # Change Log
 
-## 0.2.3
+## 0.0.3
 
-- Fixes generated URLs on Windows
-- Support for git worktrees
+- Switch to VS Code GIT API
+- Ignore remotes

@@ -2,11 +2,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-
 import * as path from 'path';
 import * as fs from 'fs';
-import * as ini from 'ini';
 import * as clipboardy from 'clipboardy';
+
+const gitExtension = vscode.extensions.getExtension('vscode.git').exports;
+const git = gitExtension.getAPI(1);
 
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
@@ -56,7 +57,7 @@ function getWorktreePath(gitPath: string) {
     }
 }
 
-function calculateURL() {
+async function calculateURL() {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         throw new Error('No selected editor');
@@ -67,7 +68,6 @@ function calculateURL() {
     let gitDir = findGitFolder(fileName);
 
     const baseDir = path.join(gitDir, '..')
-
     const worktreePath = getWorktreePath(gitDir)
 
     if (worktreePath) {
@@ -76,44 +76,32 @@ function calculateURL() {
 
     const relativePath = path.relative(baseDir, fileName);
 
-    const head = fs.readFileSync(path.join(worktreePath || gitDir, 'HEAD'), 'utf8');
-    const refPrefix = 'ref: ';
-    const ref = head.split('\n').find(line => line.startsWith(refPrefix));
-    if (!ref) {
-        throw new Error('No ref found. Cannot calculate current commit');
-    }
-    const refName = ref.substring(refPrefix.length);
-    const sha = fs.readFileSync(path.join(gitDir, refName), 'utf8').trim();
+    let repo = git.repositories[0];
+    let head = repo.state.HEAD;
+    let refName = head.name
+    let sha = head.commit;
+    let repoBranch = await repo.getBranch(refName);
 
-    const gitConfig = ini.parse(fs.readFileSync(path.join(gitDir, 'config'), 'utf8'));
+    console.log("Head:", head);
+    console.log('Ref Name', refName);
+    console.log('gitDir', gitDir);
+    console.log('sha: ', sha);
+    console.log('repoBranch: ', repoBranch);
 
-    const branchInfo = Object.values(gitConfig).find(val => val['merge'] === refName);
-    if (!branchInfo) {
-        throw new Error('No branch info found. Cannot calculate remote');
-    }
-    const remote = branchInfo['remote'];
-    const remoteInfo = Object.entries(gitConfig).find((entry) => entry[0] === `remote "${remote}"`);
-    if (!remoteInfo) {
-        throw new Error(`No remote found called "${remote}"`);
-    }
-    const url = remoteInfo[1]['url'];
-    const repoURL = getGitHubRepoURL(url);
-    if (!url) {
-        throw new Error(`The remote "${remote}" does not look like to be hosted at GitHub`);
-    }
+    let url = repo.state.remotes[0].pushUrl;
+    console.log('Push url:', url);
+    let repoURL = getGitHubRepoURL(url);
 
     const start = selection.start.line + 1;
     const end = selection.end.line + 1;
-
     const relativePathURL = relativePath.split(path.sep).join('/');
-
     return `${repoURL}/blob/${sha}/${relativePathURL}#L${start}-L${end}`;
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand('githublinker.copyLink', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('githublinker.copyLink', async () => {
         try {
-            const finalURL = calculateURL();
+            const finalURL = await calculateURL();
             clipboardy.writeSync(finalURL);
             vscode.window.showInformationMessage('GitHub URL copied to the clipboard!');
         } catch (err) {
@@ -122,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }));
 
-    context.subscriptions.push(vscode.commands.registerCommand('githublinker.copyMarkdown', () => {
+    context.subscriptions.push(vscode.commands.registerCommand('githublinker.copyMarkdown', async () => {
         try {
             const editor = vscode.window.activeTextEditor;
             if (!editor) {
@@ -132,7 +120,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             const text = document.getText(selection);
 
-            const finalURL = calculateURL();
+            const finalURL = await calculateURL();
             const markdown = finalURL + '\n\n```' + document.languageId + '\n' + text + '\n```';
             clipboardy.writeSync(markdown);
             vscode.window.showInformationMessage('GitHub URL and code copied to the clipboard!');

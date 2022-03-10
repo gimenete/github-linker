@@ -1,0 +1,1 @@
+No license in original github-linker, but my license is a "Do What You Want To Public License!

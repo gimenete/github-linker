@@ -1,15 +1,15 @@
 {
-    "name": "github-linker",
-    "displayName": "GitHub linker",
+    "name": "linker-ng",
+    "displayName": "Linker NG",
     "description": "Create links to fragments of code in GitHub",
-    "version": "0.2.3",
-    "publisher": "gimenete",
+    "version": "0.0.3",
+    "publisher": "pryorda",
     "engines": {
-        "vscode": "^1.30.0"
+        "vscode": "^1.34.0"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/gimenete/github-linker.git"
+        "url": "https://github.com/pryorda/linker-ng.git"
     },
     "categories": [
         "Other"
@@ -25,12 +25,12 @@
             {
                 "when": "editorHasSelection",
                 "command": "githublinker.copyLink",
-                "title": "GitHub linker: Copy link to selection"
+                "title": "Linker NG: Copy link to selection"
             },
             {
                 "when": "editorHasSelection",
                 "command": "githublinker.copyMarkdown",
-                "title": "GitHub linker: Copy link to selection and code as markdown"
+                "title": "Linker NG: Copy link to selection and code as markdown"
             }
         ],
         "menus": {
@@ -52,15 +52,19 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "package": "rm *.vsix ; vsce package",
+        "local-install": "code --install-extension *.vsix --force"
+
     },
     "devDependencies": {
-        "typescript": "^3.1.4",
-        "vscode": "^1.1.25",
-        "tslint": "^5.8.0",
-        "@types/node": "^8.10.25",
-        "@types/mocha": "^2.2.42"
+        "@types/mocha": "^9.1.0",
+        "@types/node": "^12.12.0",
+        "@types/vscode": "^1.34.0",
+        "@typescript-eslint/eslint-plugin": "^4.16.0",
+        "@typescript-eslint/parser": "^4.16.0",
+        "eslint": "^7.21.0",
+        "typescript": "^4.5.5"
     },
     "dependencies": {
         "@types/clipboardy": "^1.1.0",
