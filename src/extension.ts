@@ -23,12 +23,16 @@ function getGitHubRepoURL(url: string) {
 
 function findGitFolder(fileName: string): string {
     let dir = path.dirname(fileName)
+    const { root } = path.parse(dir)
     let gitDir = null;
     while (true) {
         gitDir = path.join(dir, '.git');
         const exits = fs.existsSync(gitDir);
         if (exits) {
             console.log(gitDir);
+            break;
+        } else if (dir === root) {
+            gitDir = null;
             break;
         }
         dir = path.dirname(dir);
