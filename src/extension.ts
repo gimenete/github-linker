@@ -121,7 +121,9 @@ export function activate(context: vscode.ExtensionContext) {
             clipboardy.writeSync(finalURL);
             vscode.window.showInformationMessage('GitHub URL copied to the clipboard!');
         } catch (err) {
-            vscode.window.showErrorMessage(err.message);
+            if (err instanceof Error) {
+                vscode.window.showErrorMessage(err.message);
+            }
             throw err;
         }
     }));
@@ -141,7 +143,9 @@ export function activate(context: vscode.ExtensionContext) {
             clipboardy.writeSync(markdown);
             vscode.window.showInformationMessage('GitHub URL and code copied to the clipboard!');
         } catch (err) {
-            vscode.window.showErrorMessage(err.message);
+            if (err instanceof Error) {
+                vscode.window.showErrorMessage(err.message);
+            }
             throw err;
         }
     }));
