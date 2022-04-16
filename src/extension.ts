@@ -7,16 +7,21 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as ini from 'ini';
 import * as clipboardy from 'clipboardy';
+import * as open from 'open';
 
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
-        url = url.substring(0, url.length - '.git'.length);
+        url = url.substring(0, url.length - '.git'.length)
     }
-    if (url.startsWith('https://github.com/')) {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
         return url;
     }
-    if (url.startsWith('git@github.com:')) {
-        return 'https://github.com/' + url.substring('git@github.com:'.length);
+    if (url.startsWith('git@')) {
+        var domainList = url.match("git@(.+):.+$");
+        if (domainList) {
+            var domain = domainList[1];
+            return 'https://' + domain + '/' + url.substring(('git@' + domain + ':').length);
+        }
     }
     return null;
 }
@@ -120,6 +125,16 @@ export function activate(context: vscode.ExtensionContext) {
             if (err instanceof Error) {
                 vscode.window.showErrorMessage(err.message);
             }
+            throw err;
+        }
+    }));
+
+    context.subscriptions.push(vscode.commands.registerCommand('githublinker.openLink', () => {
+        try {
+            open(calculateURL())
+            vscode.window.showInformationMessage('GitHub URL opened by system handler!');
+        } catch (err) {
+            vscode.window.showErrorMessage(err.message);
             throw err;
         }
     }));

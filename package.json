@@ -16,6 +16,7 @@
     ],
     "activationEvents": [
         "onCommand:githublinker.copyLink",
+        "onCommand:githublinker.openLink",
         "onCommand:githublinker.copyMarkdown"
     ],
     "main": "./out/extension",
@@ -29,6 +30,11 @@
             },
             {
                 "when": "editorHasSelection",
+                "command": "githublinker.openLink",
+                "title": "GitHub linker: Open link to selection in browser"
+            },
+            {
+                "when": "editorHasSelection",
                 "command": "githublinker.copyMarkdown",
                 "title": "GitHub linker: Copy link to selection and code as markdown"
             }
@@ -38,6 +44,11 @@
                 {
                     "when": "editorHasSelection",
                     "command": "githublinker.copyLink",
+                    "group": "9_cutcopypaste"
+                },
+                {
+                    "when": "editorHasSelection",
+                    "command": "githublinker.openLink",
                     "group": "9_cutcopypaste"
                 },
                 {
@@ -68,6 +79,7 @@
         "@types/clipboardy": "^1.1.0",
         "@types/ini": "^1.3.30",
         "clipboardy": "^1.2.3",
-        "ini": "^1.3.5"
+        "ini": "^1.3.5",
+        "open": "^7.0.2"
     }
 }
