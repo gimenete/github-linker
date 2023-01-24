@@ -8,6 +8,8 @@ import * as fs from 'fs';
 import * as ini from 'ini';
 import * as clipboardy from 'clipboardy';
 
+const GITHUB_REGEX = /^.*?@github.com:(.*)$/gi;
+
 function getGitHubRepoURL(url: string) {
     if (url.endsWith('.git')) {
         url = url.substring(0, url.length - '.git'.length);
@@ -15,10 +17,11 @@ function getGitHubRepoURL(url: string) {
     if (url.startsWith('https://github.com/')) {
         return url;
     }
-    if (url.startsWith('git@github.com:')) {
-        return 'https://github.com/' + url.substring('git@github.com:'.length);
+    const match = [...url.matchAll(GITHUB_REGEX)];
+    if (!match.length) {
+      return null;
     }
-    return null;
+    return 'https://github.com/' + match[0][1];
 }
 
 function findGitFolder(fileName: string): string {
